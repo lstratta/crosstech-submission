@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/lstratta/crosstech-submission/internal/config"
 )
 
 type Server struct {
@@ -11,7 +12,7 @@ type Server struct {
 	router *echo.Echo
 }
 
-func New() *Server {
+func New(c config.Config) (*Server, error) {
 	e := echo.New()
 
 	return &Server{
@@ -20,7 +21,7 @@ func New() *Server {
 			Handler: e,
 		},
 		router: e,
-	}
+	}, nil
 }
 
 func (s *Server) ListenAndServe() error {

@@ -1,4 +1,4 @@
-package database
+package server
 
 import (
 	"fmt"
@@ -30,6 +30,7 @@ func (s Story) String() string {
 
 func ExampleDB_Model() {
 	db := pg.Connect(&pg.Options{
+		Addr: ,
 		User: "postgres",
 	})
 	defer db.Close()
