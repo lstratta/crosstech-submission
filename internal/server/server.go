@@ -39,6 +39,8 @@ func New(c config.Config) (*Server, error) {
 		panic(err)
 	}
 
+	s.migrateModels()
+
 	return s, nil
 }
 

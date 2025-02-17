@@ -8,6 +8,8 @@ import (
 	"github.com/lstratta/crosstech-submission/internal/server"
 )
 
+// generate the config using environment variables,
+// create the server, and run the server
 func main() {
 	conf := config.New()
 

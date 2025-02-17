@@ -17,6 +17,8 @@ type Config struct {
 	DbName     string
 }
 
+// Generate a new config for use in the server, using environment variables
+// already on the system, or using default values for local development
 func New() Config {
 	host := getEnvDefault("HOST", "localhost")
 	port := getEnvDefault("PORT", "7777")
