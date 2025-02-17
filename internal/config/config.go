@@ -11,6 +11,10 @@ type Config struct {
 	Port           string
 	DatabaseURI    string
 	AllowedOrigins []string
+
+	PgUser     string
+	PgPassword string
+	DbName     string
 }
 
 func New() Config {
@@ -21,16 +25,23 @@ func New() Config {
 
 	ao := strings.Split(getEnvDefault("ALLOWED_ORIGINS", fmt.Sprintf("http://%s:%s,https://%s:%s", host, port, host, port)), ",")
 
+	pgUser := getEnvDefault("POSTGRES_USERNAME", "postgres")
+	pgPass := getEnvDefault("POSTGRES_PASSWORD", "postgres")
+	pgDb := getEnvDefault("POSTGRES_DATABASE", "postgres")
+
 	return Config{
 		Host:           host,
 		Port:           port,
 		DatabaseURI:    databaseURI,
 		AllowedOrigins: ao,
+		PgUser:         pgUser,
+		PgPassword:     pgPass,
+		DbName:         pgDb,
 	}
 }
 
 // this function allows easy switching between a local dev
-// environment and a cloud environment
+// and a cloud provider environment variables
 func getEnvDefault(key, def string) string {
 	if value := os.Getenv(key); value != "" {
 		return value

@@ -1,3 +1,6 @@
+test:
+	@go test -v ./...
+
 build: 
 	@go build -o main cmd/main.go
 .PHONY: build
@@ -16,3 +19,4 @@ cleanup:
 	@docker stop pgadmin postgres
 	@docker rm pgadmin postgres
 .PHONY: cleanup
+

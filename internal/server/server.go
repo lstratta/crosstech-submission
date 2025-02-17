@@ -1,8 +1,10 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
+	"github.com/go-pg/pg/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/lstratta/crosstech-submission/internal/config"
 )
@@ -10,21 +12,29 @@ import (
 type Server struct {
 	srv    *http.Server
 	router *echo.Echo
+	db     *pg.DB
+	conf   config.Config
 }
 
 func New(c config.Config) (*Server, error) {
 	e := echo.New()
 
-	return &Server{
+	s := &Server{
 		srv: &http.Server{
-			Addr:    ":7777",
+			Addr:    fmt.Sprintf("%s:%s", c.Host, c.Port),
 			Handler: e,
 		},
 		router: e,
-	}, nil
+		conf:   c,
+	}
+
+	s.setupDB()
+
+	return s, nil
 }
 
 func (s *Server) ListenAndServe() error {
-	s.Routes()
+	s.middleware(s.conf)
+	s.routes()
 	return s.srv.ListenAndServe()
 }
