@@ -30,7 +30,5 @@ func (ts *TestSuite) TestHandlePing_ReturnsPongAsMessageInJson() {
 	if assert.NoError(ts.T(), h) {
 		assert.Equal(ts.T(), http.StatusOK, res.Code)
 		assert.Equal(ts.T(), &response{Message: "Pong!"}, r)
-
 	}
-
 }

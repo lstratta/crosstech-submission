@@ -2,13 +2,14 @@ package server
 
 import "github.com/go-pg/pg/v10"
 
-func (s *Server) setupDB() {
+func (s *Server) setupDB() error {
 	c := s.conf
-	pgConf := &pg.Options{
-		Addr:     c.DatabaseURI,
-		User:     c.PgUser,
-		Password: c.PgPassword,
-		Database: c.DbName,
+	opt, err := pg.ParseURL(c.DatabaseURI)
+	if err != nil {
+		return err
 	}
-	s.db = pg.Connect(pgConf)
+
+	s.db = pg.Connect(opt)
+
+	return nil
 }

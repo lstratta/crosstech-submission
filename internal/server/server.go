@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -28,7 +29,15 @@ func New(c config.Config) (*Server, error) {
 		conf:   c,
 	}
 
-	s.setupDB()
+	if err := s.setupDB(); err != nil {
+		return nil, err
+	}
+
+	ctx := context.Background()
+
+	if err := s.db.Ping(ctx); err != nil {
+		panic(err)
+	}
 
 	return s, nil
 }
