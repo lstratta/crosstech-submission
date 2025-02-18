@@ -9,20 +9,6 @@ import (
 	"github.com/lstratta/crosstech-submission/internal/models"
 )
 
-type jsonTrack struct {
-	TrackId   int64        `json:"track_id"`
-	Source    string       `json:"source"`
-	Target    string       `json:"target"`
-	SignalIDs []jsonSignal `json:"signal_ids"`
-}
-
-type jsonSignal struct {
-	SignalId   int64   `json:"signal_id"`
-	SignalName string  `json:"signal_name"`
-	ELR        string  `json:"elr"`
-	Milage     float64 `json:"milage"`
-}
-
 func ParseJsonData() ([]models.Track, error) {
 	tArr := []models.Track{}
 
