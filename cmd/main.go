@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/lstratta/crosstech-submission/internal/config"
+	"github.com/lstratta/crosstech-submission/config"
 	"github.com/lstratta/crosstech-submission/internal/server"
 )
 

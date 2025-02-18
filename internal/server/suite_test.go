@@ -3,7 +3,7 @@ package server
 import (
 	"testing"
 
-	"github.com/lstratta/crosstech-submission/internal/config"
+	"github.com/lstratta/crosstech-submission/config"
 	"github.com/stretchr/testify/suite"
 )
 

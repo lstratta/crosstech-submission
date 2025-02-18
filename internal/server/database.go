@@ -3,7 +3,7 @@ package server
 import (
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
-	"github.com/lstratta/crosstech-submission/internal/models"
+	"github.com/lstratta/crosstech-submission/models"
 )
 
 func (s *Server) setupDB() error {

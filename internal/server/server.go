@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-pg/pg/v10"
 	"github.com/labstack/echo/v4"
-	"github.com/lstratta/crosstech-submission/internal/config"
+	"github.com/lstratta/crosstech-submission/config"
 )
 
 type Server struct {
@@ -45,7 +45,7 @@ func New(c config.Config) (*Server, error) {
 }
 
 func (s *Server) ListenAndServe() error {
-	s.middleware(s.conf)
+	s.middleware()
 	s.routes()
 	return s.srv.ListenAndServe()
 }
