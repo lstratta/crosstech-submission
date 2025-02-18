@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
@@ -48,6 +49,7 @@ func MigrateModels(db *DB) error {
 // models in future code updates
 func defaultModels() []any {
 	return []any{
+		&models.TrackSignalJoin{},
 		&models.Track{},
 		&models.Signal{},
 	}
@@ -68,6 +70,55 @@ func (db *DB) InsertData(ctx context.Context, track models.Track) {
 			VALUES (?0, ?1, ?2, ?3);`,
 			s.ELR, s.Mileage, s.SignalId, s.SignalName,
 		)
+
+		c.ExecContext(ctx, `
+			INSERT INTO track_signal_joins (signal_id, track_id)
+			VALUES (?0, ?1);`,
+			s.SignalId, track.TrackId,
+		)
 	}
 
+}
+
+func (db *DB) Tracks() ([]models.Track, error) {
+	t := []models.Track{}
+	_, err := db.conn.Query(&t, `
+	  SELECT * FROM tracks;
+	`)
+	if err != nil {
+		return nil, fmt.Errorf("error querying database for tracks: %v", err)
+	}
+
+	return t, nil
+}
+
+func (db *DB) Signals() ([]models.Signal, error) {
+	s := []models.Signal{}
+	_, err := db.conn.Query(&s, `
+	  SELECT * FROM signals;
+	`)
+	if err != nil {
+		return nil, fmt.Errorf("error querying database for tracks: %v", err)
+	}
+
+	return s, nil
+}
+
+func (db *DB) SignalsById(id string) ([]models.Signal, error) {
+	s := []models.Signal{}
+	_, err := db.conn.Query(&s, `
+	  SELECT * FROM signals
+	  WHERE signal_id = ?0;
+	`, id)
+	if err != nil {
+		return nil, fmt.Errorf("error querying database for tracks: %v", err)
+	}
+
+	return s, nil
+}
+
+func (db *DB) TracksBySignalId(id string) ([]models.Track, error) {
+	t := []models.Track{}
+
+	return t, nil
 }

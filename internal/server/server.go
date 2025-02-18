@@ -45,7 +45,7 @@ func New(c config.Config) (*Server, error) {
 	}
 
 	if err := database.MigrateModels(s.db); err != nil {
-		return nil, nil //fmt.Errorf("error migrating tables: %v", err)
+		return nil, fmt.Errorf("error migrating tables: %v", err)
 	}
 
 	trackData, err := data.ParseJsonData()
@@ -56,7 +56,7 @@ func New(c config.Config) (*Server, error) {
 	// prevent duplication of data on startup and reload
 	res, err := s.db.Conn().Query(&models.Track{}, "SELECT * FROM tracks;")
 	if pg.Result.RowsReturned(res) == 0 {
-		fmt.Println("NO ROWS FOUND")
+		fmt.Println("no data found in db... populating...")
 		for _, t := range trackData {
 			s.db.InsertData(ctx, t)
 		}
