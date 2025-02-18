@@ -42,8 +42,6 @@ func ParseJsonData() ([]models.Track, error) {
 		newStr = newStr + newS
 	}
 
-	// fmt.Println(newStr)
-
 	if err = json.Unmarshal([]byte(newStr), &tArr); err != nil {
 		return nil, fmt.Errorf("error unmarshalling file: %v", err)
 	}

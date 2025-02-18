@@ -33,8 +33,6 @@ func SetupLocalDB(conf config.Config) (*DB, error) {
 	return &DB{conn: c}, nil
 }
 
-// Migrates all models and creates tables based on
-// their attributes
 func MigrateModels(db *DB) error {
 
 	for _, model := range defaultModels() {
@@ -47,10 +45,9 @@ func MigrateModels(db *DB) error {
 }
 
 // Separate function to allow for easy addition of new
-// models in future code updates - shown for potential.
+// models in future code updates
 func defaultModels() []any {
 	return []any{
-		// &models.TrackToSignal{}, // many-to-many table must come first
 		&models.Track{},
 		&models.Signal{},
 	}
@@ -66,12 +63,6 @@ func (db *DB) InsertData(ctx context.Context, track models.Track) {
 	)
 
 	for _, s := range track.SignalIDs {
-		// c.Exec(`
-		// 	INSERT INTO track_to_signals (track_track_id, signal_id)
-		// 	VALUES (?0, ?1);`,
-		// 	track.TrackId, s.SignalId,
-		// )
-
 		c.ExecContext(ctx, `
 			INSERT INTO signals (elr, mileage, signal_id, signal_name)
 			VALUES (?0, ?1, ?2, ?3);`,
