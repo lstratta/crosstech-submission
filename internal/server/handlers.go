@@ -50,9 +50,8 @@ func (s *Server) handleGetTracks(c echo.Context) error {
 		return trackResponse(c, http.StatusInternalServerError, err, "error finding tracks", nil)
 	}
 
-	return c.JSON(http.StatusOK, &models.TrackResponse{
-		Tracks: t,
-	})
+	return trackResponse(c, http.StatusOK, nil, "request successful", t)
+
 }
 
 // Returns all tracks with a specific ID

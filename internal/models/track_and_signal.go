@@ -1,7 +1,7 @@
 package models
 
 type Track struct {
-	TrackPk   int64    `json:"track_pk,omitempty" pg:",pk"`
+	TrackPk   int64    `json:"-" pg:",pk"`
 	TrackId   int      `json:"track_id" pg:",unique"`
 	Source    string   `json:"source"`
 	Target    string   `json:"target"`
@@ -9,7 +9,7 @@ type Track struct {
 }
 
 type Signal struct {
-	SignalPk   int64   `json:"signal_pk,omitempty" pg:",pk"`
+	SignalPk   int64   `json:"-" pg:",pk"`
 	SignalId   int     `json:"signal_id"`
 	SignalName string  `json:"signal_name"`
 	ELR        string  `json:"elr"`

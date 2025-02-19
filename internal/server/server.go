@@ -55,21 +55,8 @@ func New(c config.Config) (*Server, error) {
 		return nil, fmt.Errorf("error migrating tables: %v", err)
 	}
 
-	// insert json data
-	trackData, err := data.ParseJsonData()
-	if err != nil {
-		return nil, fmt.Errorf("error inputing data: %v", err)
-	}
-
-	// prevent duplication of data on startup and reload
-	res, err := s.db.Conn().Query(&models.Track{}, "SELECT * FROM tracks;")
-	if res.RowsReturned() < 1 {
-		fmt.Println("no data found in db... populating...")
-		for _, t := range trackData {
-			s.db.CreateTrack(&t)
-		}
-	} else if err != nil {
-		return nil, fmt.Errorf("error querying db: %v", err)
+	if err := hydrateDb(s); err != nil {
+		return nil, fmt.Errorf("error hydrating db: %v", err)
 	}
 
 	return s, nil
@@ -81,4 +68,25 @@ func (s *Server) ListenAndServe() error {
 	s.middleware()
 	s.routes()
 	return s.srv.ListenAndServe()
+}
+
+func hydrateDb(s *Server) error {
+	// insert json data
+	trackData, err := data.ParseJsonData()
+	if err != nil {
+		return fmt.Errorf("error inputing data: %v", err)
+	}
+
+	// prevent duplication of data on startup and reload
+	res, err := s.db.Conn().Query(&models.Track{}, "SELECT * FROM tracks;")
+	if res.RowsReturned() < 1 {
+		fmt.Println("no data found in db... populating...")
+		for _, t := range trackData {
+			s.db.CreateTrack(&t)
+		}
+	} else if err != nil {
+		return fmt.Errorf("error querying db: %v", err)
+	}
+
+	return nil
 }

@@ -31,7 +31,7 @@ func SetupLocalDB(conf config.Config) (*DB, error) {
 
 func MigrateModels(db *DB) error {
 
-	for _, model := range defaultModels() {
+	for _, model := range DefaultModels() {
 		err := db.conn.Model(model).CreateTable(&orm.CreateTableOptions{IfNotExists: true})
 		if err != nil {
 			return err
@@ -42,7 +42,7 @@ func MigrateModels(db *DB) error {
 
 // Separate function to allow for easy addition of new
 // models in future code updates
-func defaultModels() []any {
+func DefaultModels() []any {
 	return []any{
 		&models.TrackSignalJoin{},
 		&models.Track{},

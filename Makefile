@@ -1,6 +1,10 @@
 # test the application code
-test:
+test: 
+	@docker compose -f docker/compose.yaml up -d 
+	@sleep 2 # prevents panic when not able to connect to db
 	@go test -v ./...
+	@docker stop pgadmin postgres
+	@docker rm pgadmin postgres
 .PHONY: test
 
 # build the binary after testing the code
@@ -13,7 +17,7 @@ start:
 	@docker compose -f docker/compose.yaml up -d 
 	@sleep 2 # prevents panic when not able to connect to db
 	@air
-.PHONY: run-dev 
+.PHONY: start
 
 # starts the servre without Air
 run:
