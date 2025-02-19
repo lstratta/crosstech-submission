@@ -78,7 +78,6 @@ func (db *DB) CreateTrackWithSignals(t *models.Track) (*models.Track, error) {
 		if err != nil {
 			return nil, err
 		}
-
 	}
 
 	return t, nil

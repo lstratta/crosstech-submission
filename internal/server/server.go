@@ -52,7 +52,7 @@ func New(c config.Config) (*Server, error) {
 	}
 
 	// create tables
-	if err := database.MigrateModels(s.db); err != nil {
+	if err := database.MigrateTables(s.db); err != nil {
 		return nil, fmt.Errorf("error migrating tables: %v", err)
 	}
 

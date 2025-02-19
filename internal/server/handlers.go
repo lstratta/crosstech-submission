@@ -111,7 +111,6 @@ func (s *Server) handleGetSignalBySignalId(c echo.Context) error {
 
 // Creates a new track
 func (s *Server) handlePostTrack(c echo.Context) error {
-
 	b, err := io.ReadAll(c.Request().Body)
 	if err != nil {
 		return trackResponse(c, http.StatusBadRequest, err, "error reading request body", nil)
@@ -157,7 +156,6 @@ func (s *Server) handlePostSignal(c echo.Context) error {
 
 // Updates a signal
 func (s *Server) handleUpdateSignal(c echo.Context) error {
-
 	b, err := io.ReadAll(c.Request().Body)
 	if err != nil {
 		return signalResponse(c, http.StatusInternalServerError, err, "error reading request body", nil)
@@ -177,7 +175,6 @@ func (s *Server) handleUpdateSignal(c echo.Context) error {
 
 // Updates a track
 func (s *Server) handleUpdateTrack(c echo.Context) error {
-
 	b, err := io.ReadAll(c.Request().Body)
 	if err != nil {
 		return trackResponse(c, http.StatusInternalServerError, err, "error reading request body", nil)
@@ -198,33 +195,33 @@ func (s *Server) handleUpdateTrack(c echo.Context) error {
 // DELETE methods
 
 // Deletes a signal
-func (s *Server) handleDeleteSignal(c echo.Context) error {
+func (s *Server) handleDeleteSignalById(c echo.Context) error {
 	p := c.Param("id")
 	id, err := strconv.Atoi(p)
 	if err != nil {
-		return signalResponse(c, http.StatusInternalServerError, err, "error converting string to int", nil)
+		return signalResponse(c, http.StatusBadRequest, err, "error converting string to int", nil)
 	}
 	err = s.db.DeleteSignalById(id)
 	if err != nil {
 		return signalResponse(c, http.StatusInternalServerError, err, "error deleting signal by id", nil)
 	}
 
-	return signalResponse(c, http.StatusNoContent, nil, "delete successful", nil)
+	return signalResponse(c, http.StatusOK, nil, "delete successful", nil)
 }
 
 // Deletes a track
-func (s *Server) handleDeleteTrack(c echo.Context) error {
+func (s *Server) handleDeleteTrackById(c echo.Context) error {
 	p := c.Param("id")
 	id, err := strconv.Atoi(p)
 	if err != nil {
-		return trackResponse(c, http.StatusInternalServerError, err, "error converting string to int", nil)
+		return trackResponse(c, http.StatusBadRequest, err, "error converting string to int", nil)
 	}
 	err = s.db.DeleteTrackById(id)
 	if err != nil {
 		return trackResponse(c, http.StatusInternalServerError, err, "error deleting track by id", nil)
 	}
 
-	return trackResponse(c, http.StatusNoContent, nil, "delete successful", nil)
+	return trackResponse(c, http.StatusOK, nil, "delete successful", nil)
 }
 
 // wrapper for responding to signal requests
@@ -232,12 +229,8 @@ func signalResponse(c echo.Context, status int, err error, message string, res [
 	if err != nil {
 		return c.JSON(status, &models.SignalResponse{
 			Signals: []models.Signal{},
-			Errors: []models.Errors{
-				{
-					Message: message,
-					Detail:  err.Error(),
-				},
-			},
+			Message: message,
+			Error:   err.Error(),
 		})
 	}
 
@@ -251,13 +244,9 @@ func signalResponse(c echo.Context, status int, err error, message string, res [
 func trackResponse(c echo.Context, status int, err error, message string, res []models.Track) error {
 	if err != nil {
 		return c.JSON(status, &models.TrackResponse{
-			Tracks: []models.Track{},
-			Errors: []models.Errors{
-				{
-					Message: message,
-					Detail:  err.Error(),
-				},
-			},
+			Tracks:  []models.Track{},
+			Message: message,
+			Error:   err.Error(),
 		})
 	}
 

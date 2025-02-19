@@ -238,7 +238,7 @@ func (ts *TestSuite) TestHandlePutSignal_Returns200AndCreatedRecord() {
 	}
 	rd := bytes.NewReader(d)
 
-	req := httptest.NewRequest(http.MethodPost, "/signals", rd)
+	req := httptest.NewRequest(http.MethodPut, "/signals", rd)
 	res := httptest.NewRecorder()
 
 	c := echo.New().NewContext(req, res)
@@ -275,7 +275,7 @@ func (ts *TestSuite) TestHandlePutTrack_Returns200AndCreatedRecord() {
 	}
 	rd := bytes.NewReader(d)
 
-	req := httptest.NewRequest(http.MethodPost, "/tracks", rd)
+	req := httptest.NewRequest(http.MethodPut, "/tracks", rd)
 	res := httptest.NewRecorder()
 
 	c := echo.New().NewContext(req, res)
@@ -296,5 +296,62 @@ func (ts *TestSuite) TestHandlePutTrack_Returns200AndCreatedRecord() {
 	if assert.NoError(ts.T(), h) {
 		assert.Equal(ts.T(), http.StatusOK, res.Code)
 		assert.Equal(ts.T(), trk.Source, r.Tracks[0].Source)
+	}
+}
+
+func (ts *TestSuite) TestHandleDeleteTrack_Returns200AndMessage() {
+	req := httptest.NewRequest(http.MethodDelete, "/tracks/", nil)
+	res := httptest.NewRecorder()
+
+	c := echo.New().NewContext(req, res)
+	c.SetPath("/tracks/:id")
+	c.SetParamNames("id")
+	c.SetParamValues("55")
+
+	h := ts.srv.handleDeleteTrackById(c)
+
+	b, err := io.ReadAll(res.Body)
+	if err != nil {
+		ts.T().Errorf("error reading response body: %s", err)
+	}
+
+	r := models.TrackResponse{}
+	err = json.Unmarshal(b, &r)
+	if err != nil {
+		ts.T().Errorf("error unmashalling json: %s", err)
+	}
+
+	if assert.NoError(ts.T(), h) {
+		assert.Equal(ts.T(), http.StatusOK, res.Code)
+		assert.Equal(ts.T(), "delete successful", r.Message)
+		assert.Equal(ts.T(), "", r.Error)
+	}
+}
+
+func (ts *TestSuite) TestHandleDeleteSignal_Returns200AndMessage() {
+	req := httptest.NewRequest(http.MethodDelete, "/signals/", nil)
+	res := httptest.NewRecorder()
+
+	c := echo.New().NewContext(req, res)
+	c.SetPath("/signals/:id")
+	c.SetParamNames("id")
+	c.SetParamValues("453")
+
+	h := ts.srv.handleDeleteSignalById(c)
+
+	b, err := io.ReadAll(res.Body)
+	if err != nil {
+		ts.T().Errorf("error reading response body: %s", err)
+	}
+
+	r := models.TrackResponse{}
+	err = json.Unmarshal(b, &r)
+	if err != nil {
+		ts.T().Errorf("error unmashalling json: %s", err)
+	}
+
+	if assert.NoError(ts.T(), h) {
+		assert.Equal(ts.T(), http.StatusOK, res.Code)
+		assert.Equal(ts.T(), "delete successful", r.Message)
 	}
 }

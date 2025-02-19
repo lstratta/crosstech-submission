@@ -6,7 +6,6 @@ package database
 
 import (
 	"github.com/go-pg/pg/v10"
-	"github.com/go-pg/pg/v10/orm"
 	"github.com/lstratta/crosstech-submission/config"
 	"github.com/lstratta/crosstech-submission/internal/models"
 )
@@ -29,10 +28,39 @@ func SetupLocalDB(conf config.Config) (*DB, error) {
 	return &DB{conn: c}, nil
 }
 
-func MigrateModels(db *DB) error {
+func MigrateTables(db *DB) error {
 
-	for _, model := range DefaultModels() {
-		err := db.conn.Model(model).CreateTable(&orm.CreateTableOptions{IfNotExists: true})
+	for range DefaultModels() {
+		_, err := db.conn.Exec(`
+		CREATE TABLE IF NOT EXISTS track_signal_joins (
+			id SERIAL PRIMARY KEY,
+			track_id int,
+			signal_id int
+			);`)
+
+		if err != nil {
+			return err
+		}
+
+		_, err = db.conn.Exec(`
+		CREATE TABLE IF NOT EXISTS tracks (
+			track_pk SERIAL PRIMARY KEY,
+			track_id INT UNIQUE NOT NULL,
+			source VARCHAR (100),
+			target VARCHAR (100)
+			);`)
+		if err != nil {
+			return err
+		}
+
+		_, err = db.conn.Exec(`
+		CREATE TABLE IF NOT EXISTS signals (
+			signal_pk SERIAL PRIMARY KEY,
+			signal_id INT NOT NULL,
+			signal_name VARCHAR (100),
+			elr VARCHAR (10),
+			mileage float(8)
+			);`)
 		if err != nil {
 			return err
 		}
