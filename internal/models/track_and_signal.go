@@ -1,15 +1,15 @@
 package models
 
 type Track struct {
-	TrackPK   int64    `json:"track_pk" pg:",pk"`
-	TrackId   int      `json:"track_id"`
+	TrackPk   int64    `json:"track_pk,omitempty" pg:",pk"`
+	TrackId   int      `json:"track_id" pg:",unique"`
 	Source    string   `json:"source"`
 	Target    string   `json:"target"`
-	SignalIDs []Signal `json:"signal_ids,omitempty"`
+	SignalIds []Signal `json:"signal_ids,omitempty"`
 }
 
 type Signal struct {
-	SignalPK   int64   `json:"signal_pk" pg:",pk"`
+	SignalPk   int64   `json:"signal_pk,omitempty" pg:",pk"`
 	SignalId   int     `json:"signal_id"`
 	SignalName string  `json:"signal_name"`
 	ELR        string  `json:"elr"`
@@ -23,9 +23,19 @@ type TrackSignalJoin struct {
 }
 
 type TrackResponse struct {
-	Tracks []Track `json:"tracks"`
+	Tracks  []Track  `json:"tracks"`
+	Message string   `json:"message,omitempty"`
+	Errors  []Errors `json:"errors,omitempty"`
 }
 
 type SignalResponse struct {
 	Signals []Signal `json:"signals"`
+	Message string   `json:"message,omitempty"`
+	Errors  []Errors `json:"errors,omitempty"`
+}
+
+type Errors struct {
+	Error   string `json:"error"`
+	Message string `json:"message"`
+	Detail  string `json:"detail"`
 }

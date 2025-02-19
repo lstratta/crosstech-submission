@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/go-pg/pg/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/lstratta/crosstech-submission/config"
 	"github.com/lstratta/crosstech-submission/internal/data"
@@ -55,10 +54,10 @@ func New(c config.Config) (*Server, error) {
 
 	// prevent duplication of data on startup and reload
 	res, err := s.db.Conn().Query(&models.Track{}, "SELECT * FROM tracks;")
-	if pg.Result.RowsReturned(res) == 0 {
+	if res.RowsReturned() < 1 {
 		fmt.Println("no data found in db... populating...")
 		for _, t := range trackData {
-			s.db.InsertData(ctx, t)
+			s.db.CreateTrack(&t)
 		}
 	} else if err != nil {
 		return nil, fmt.Errorf("error querying db: %v", err)
