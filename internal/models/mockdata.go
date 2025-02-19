@@ -15,7 +15,7 @@ func SetupThreeTracksEachWithFiveSignals() []Track {
 				},
 				{
 					SignalId:   2848,
-					SignalName: "SIG:SN169(CO) IECC PDRF14 LOC R3/107",
+					SignalName: "SIG:SN169(CO) IECC PDR314 LOC R3/107",
 					ELR:        "ONM1",
 					Mileage:    4.2126,
 				},

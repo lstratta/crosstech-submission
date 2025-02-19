@@ -9,8 +9,8 @@ import (
 )
 
 func (db *DB) Tracks() ([]models.Track, error) {
-	t := []models.Track{}
-	_, err := db.conn.Query(&t, `
+	ts := []models.Track{}
+	_, err := db.conn.Query(&ts, `
 	  SELECT * 
 	  FROM tracks
 	  ORDER BY track_id ASC;
@@ -19,21 +19,38 @@ func (db *DB) Tracks() ([]models.Track, error) {
 		return nil, fmt.Errorf("error querying database for tracks: %v", err)
 	}
 
-	return t, nil
+	return ts, nil
 }
 
 func (db *DB) TracksById(id int) ([]models.Track, error) {
-	t := []models.Track{}
-	_, err := db.conn.Query(&t, `
+	ts := []models.Track{}
+	_, err := db.conn.Query(&ts, `
 	  SELECT * FROM tracks
 	  WHERE track_id = ?0;
 	`, id)
 	if err != nil {
 		return nil, fmt.Errorf("error querying database for tracks: %v", err)
 	}
-	fmt.Println("FIND TRACK BY ID", t)
 
-	return t, nil
+	// add signals to corresponding track
+	for n, t := range ts {
+		s := []models.Signal{}
+
+		_, err := db.conn.Query(&s, `
+	  	SELECT signals.signal_id, signals.signal_name, signals.elr, signals.mileage
+		FROM tracks
+		JOIN track_signal_joins ON tracks.track_id = track_signal_joins.track_id
+		JOIN signals ON track_signal_joins.signal_id = signals.signal_id
+		WHERE tracks.track_id = ?0;
+	`, t.TrackId)
+		if err != nil {
+			return nil, fmt.Errorf("error querying database for tracks: %v", err)
+		}
+
+		ts[n].SignalIds = s
+	}
+
+	return ts, nil
 }
 
 func (db *DB) TracksBySignalId(id int) ([]models.Track, error) {

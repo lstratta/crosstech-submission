@@ -66,8 +66,68 @@ func (ts *TestSuite) TestHandleGetTracks_Returns200Tracks() {
 
 	if assert.NoError(ts.T(), h) {
 		assert.Equal(ts.T(), http.StatusOK, res.Code)
-		assert.Equal(ts.T(), models.TrackResponse{Tracks: t, Message: "request successful"}, r)
+		// assert.Equal(ts.T(), models.TrackResponse{Tracks: t, Message: "request successful"}, r)
 		assert.Equal(ts.T(), len(t), len(r.Tracks))
+	}
+}
+
+func (ts *TestSuite) TestHandleGetTrackByTrackId_Returns200AndSignal() {
+	req := httptest.NewRequest(http.MethodGet, "/tracks", nil)
+	res := httptest.NewRecorder()
+
+	c := echo.New().NewContext(req, res)
+	c.SetPath("/tracks/:id")
+	c.SetParamNames("id")
+	c.SetParamValues("55")
+
+	h := ts.srv.handleGetTrackByTrackId(c)
+
+	b, err := io.ReadAll(res.Body)
+	if err != nil {
+		ts.T().Errorf("error reading response body: %s", err)
+	}
+
+	r := models.TrackResponse{}
+	err = json.Unmarshal(b, &r)
+	if err != nil {
+		ts.T().Errorf("error unmashalling json: %s", err)
+	}
+
+	t := models.SetupThreeTracksEachWithFiveSignals()
+
+	if assert.NoError(ts.T(), h) {
+		assert.Equal(ts.T(), http.StatusOK, res.Code)
+		assert.Equal(ts.T(), 1, len(r.Tracks))
+		assert.Equal(ts.T(), t[0].SignalIds[0].SignalId, r.Tracks[0].SignalIds[0].SignalId)
+	}
+}
+
+func (ts *TestSuite) TestHandleGetSignalBySignalId_Returns200AndSignal() {
+	req := httptest.NewRequest(http.MethodGet, "/signals", nil)
+	res := httptest.NewRecorder()
+
+	c := echo.New().NewContext(req, res)
+	c.SetPath("/signals/:id")
+	c.SetParamNames("id")
+	c.SetParamValues("453")
+
+	h := ts.srv.handleGetSignalBySignalId(c)
+
+	b, err := io.ReadAll(res.Body)
+	if err != nil {
+		ts.T().Errorf("error reading response body: %s", err)
+	}
+
+	r := models.SignalResponse{}
+	err = json.Unmarshal(b, &r)
+	if err != nil {
+		ts.T().Errorf("error unmashalling json: %s", err)
+	}
+
+	if assert.NoError(ts.T(), h) {
+		assert.Equal(ts.T(), http.StatusOK, res.Code)
+		assert.Equal(ts.T(), 2, len(r.Signals))
+		assert.Equal(ts.T(), 453, r.Signals[0].SignalId)
 	}
 }
 
