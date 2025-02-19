@@ -156,9 +156,9 @@ They are as follows with their default values:
 
 ```bash
 export HOST="localhost"
-export PORT="localhost"
-export DATABASE_URI="localhost"
-export ALLOWED_ORIGINS="http://localhost:7777"
+export PORT="7777"
+export DATABASE_URI="postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable"
+export ALLOWED_ORIGINS="http://localhost:7777,https://localhost:7777"
 export POSTGRES_USERNAME="postgres"
 export POSTGRES_PASSWORD="postgres"
 export POSTGRES_DATABASE="postgres"
