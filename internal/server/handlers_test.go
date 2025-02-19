@@ -57,12 +57,12 @@ func (ts *TestSuite) TestHandleGetTracks_ReturnsTracks() {
 
 	if assert.NoError(ts.T(), h) {
 		assert.Equal(ts.T(), http.StatusOK, res.Code)
-		assert.Equal(ts.T(), models.TrackResponse{Tracks: models.SetupOneTrack(), Message: "request successful"}, r)
+		assert.Equal(ts.T(), models.TrackResponse{Tracks: models.SetupThreeTracks(), Message: "request successful"}, r)
 	}
 }
 
 func (ts *TestSuite) TestHandleGetTracksBySignalId_ReturnsAllTracksWithThatId() {
-	req := httptest.NewRequest(http.MethodGet, "/tracks/", nil)
+	req := httptest.NewRequest(http.MethodGet, "/tracks?query-id=453", nil)
 	res := httptest.NewRecorder()
 
 	c := echo.New().NewContext(req, res)
@@ -82,6 +82,7 @@ func (ts *TestSuite) TestHandleGetTracksBySignalId_ReturnsAllTracksWithThatId() 
 
 	if assert.NoError(ts.T(), h) {
 		assert.Equal(ts.T(), http.StatusOK, res.Code)
-		assert.Equal(ts.T(), models.TrackResponse{Tracks: models.SetupOneTrack(), Message: "request successful"}, r)
+		assert.Equal(ts.T(), 55, r.Tracks[0].TrackId)
+		assert.Equal(ts.T(), 3247, r.Tracks[1].TrackId)
 	}
 }

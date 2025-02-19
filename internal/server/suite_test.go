@@ -32,7 +32,7 @@ func (ts *TestSuite) SetupSuite() {
 }
 
 func (ts *TestSuite) SetupTest() {
-	for _, t := range models.SetupTwoTracksEachWithFiveSignals() {
+	for _, t := range models.SetupThreeTracksEachWithFiveSignals() {
 		_, err := ts.srv.db.CreateTrack(&t)
 		if err != nil {
 			ts.T().Errorf("error creating tracks: %s", err)

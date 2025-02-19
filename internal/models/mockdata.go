@@ -1,6 +1,6 @@
 package models
 
-func SetupTwoTracksEachWithFiveSignals() []Track {
+func SetupThreeTracksEachWithFiveSignals() []Track {
 	return []Track{
 		{
 			TrackId: 55,
@@ -40,9 +40,9 @@ func SetupTwoTracksEachWithFiveSignals() []Track {
 			},
 		},
 		{
-			TrackId: 55,
-			Source:  "Acton Central",
-			Target:  "Willesden Junction",
+			TrackId: 3247,
+			Source:  "Battersea Park",
+			Target:  "Clapham Junction",
 			SignalIds: []Signal{
 				{
 					SignalId:   13721,
@@ -76,15 +76,62 @@ func SetupTwoTracksEachWithFiveSignals() []Track {
 				},
 			},
 		},
+		{
+			TrackId: 4522,
+			Source:  "Brent Cross West",
+			Target:  "Acton Central",
+			SignalIds: []Signal{
+				{
+					SignalId:   13907,
+					SignalName: "SIG:WM819(CO)WILLESDEN JCN",
+					ELR:        "MMH",
+					Mileage:    2.2734,
+				},
+				{
+					SignalId:   13894,
+					SignalName: "SIG:WM779(CO)HARLESDEN JCN",
+					ELR:        "VIM",
+					Mileage:    2.5724,
+				},
+				{
+					SignalId:   453,
+					SignalName: "SIG:AW148(CO) ACTON WELLS JCN",
+					ELR:        "LPC5",
+					Mileage:    3.1745,
+				},
+				{
+					SignalId:   13898,
+					SignalName: "SIG:WM788(CO)BRENT NEW JCN",
+					ELR:        "MHM",
+					Mileage:    3.2005,
+				},
+				{
+					SignalId:   13730,
+					SignalName: "SIG:WS37(CO)STONEBRIDGE PARK",
+					ELR:        "KXD",
+					Mileage:    8.7886,
+				},
+			},
+		},
 	}
 }
 
-func SetupOneTrack() []Track {
+func SetupThreeTracks() []Track {
 	return []Track{
 		{
 			TrackId: 55,
 			Source:  "Acton Central",
 			Target:  "Willesden Junction",
+		},
+		{
+			TrackId: 3247,
+			Source:  "Battersea Park",
+			Target:  "Clapham Junction",
+		},
+		{
+			TrackId: 4522,
+			Source:  "Brent Cross West",
+			Target:  "Acton Central",
 		},
 	}
 }
