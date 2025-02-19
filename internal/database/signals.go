@@ -61,13 +61,13 @@ func (db *DB) UpdateSignal(s *models.Signal) (*models.Signal, error) {
 }
 
 func (db *DB) DeleteSignalById(id int) error {
-	_, err := db.conn.Exec(
+	_, err := db.conn.ExecOne(
 		`
 			DELETE FROM signals
 			WHERE signal_id = ?0;
 		`, id)
 	if err != nil {
-		return fmt.Errorf("error deleting signal: %v", err)
+		return err
 	}
 
 	return nil
