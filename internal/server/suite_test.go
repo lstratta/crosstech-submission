@@ -33,19 +33,9 @@ func (ts *TestSuite) SetupSuite() {
 
 func (ts *TestSuite) SetupTest() {
 	for _, t := range models.SetupThreeTracksEachWithFiveSignals() {
-		_, err := ts.srv.db.CreateTrack(&t)
+		_, err := ts.srv.db.CreateTrackWithSignals(&t)
 		if err != nil {
 			ts.T().Errorf("error creating tracks: %s", err)
-		}
-		for _, s := range t.SignalIds {
-			_, err = ts.srv.db.CreateSignal(&s)
-			if err != nil {
-				ts.T().Errorf("error creating signals: %s", err)
-			}
-			err = ts.srv.db.CreateTrackSignalJoin(s.SignalId, t.TrackId)
-			if err != nil {
-				ts.T().Errorf("error creating track signal join table: %s", err)
-			}
 		}
 	}
 }

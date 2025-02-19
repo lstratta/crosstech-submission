@@ -123,7 +123,7 @@ func (s *Server) handlePostTrack(c echo.Context) error {
 
 	}
 
-	res, err := s.db.CreateTrack(&t)
+	res, err := s.db.CreateTrackWithSignals(&t)
 	if err != nil {
 		return trackResponse(c, http.StatusInternalServerError, err, "error creating track record", nil)
 

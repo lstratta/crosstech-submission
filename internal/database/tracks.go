@@ -53,7 +53,7 @@ func (db *DB) TracksBySignalId(id int) ([]models.Track, error) {
 	return t, nil
 }
 
-func (db *DB) CreateTrack(t *models.Track) (*models.Track, error) {
+func (db *DB) CreateTrackWithSignals(t *models.Track) (*models.Track, error) {
 	_, err := db.conn.Exec(`
 		INSERT INTO tracks (track_id, source, target)
 		VALUES (?0, ?1, ?2)

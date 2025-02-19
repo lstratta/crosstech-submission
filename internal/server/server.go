@@ -45,16 +45,18 @@ func New(c config.Config) (*Server, error) {
 
 	s.db = db
 
-	// check db connectivity and migrate tables
+	// check db connectivity
 	ctx := context.Background()
 	if err := s.db.Conn().Ping(ctx); err != nil {
 		return nil, fmt.Errorf("error pinging database - it may not be ready: %v", err)
 	}
 
+	// create tables
 	if err := database.MigrateModels(s.db); err != nil {
 		return nil, fmt.Errorf("error migrating tables: %v", err)
 	}
 
+	// populate database
 	if err := hydrateDb(s); err != nil {
 		return nil, fmt.Errorf("error hydrating db: %v", err)
 	}
@@ -82,7 +84,7 @@ func hydrateDb(s *Server) error {
 	if res.RowsReturned() < 1 {
 		fmt.Println("no data found in db... populating...")
 		for _, t := range trackData {
-			s.db.CreateTrack(&t)
+			s.db.CreateTrackWithSignals(&t)
 		}
 	} else if err != nil {
 		return fmt.Errorf("error querying db: %v", err)

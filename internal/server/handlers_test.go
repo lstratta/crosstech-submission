@@ -95,3 +95,36 @@ func (ts *TestSuite) TestHandleGetTracksBySignalId_Returns200AllTracksWithThatId
 		assert.Equal(ts.T(), 3247, r.Tracks[1].TrackId)
 	}
 }
+
+func (ts *TestSuite) TestHandleGetSignals_Returns200AllSignals() {
+	req := httptest.NewRequest(http.MethodGet, "/signals", nil)
+	res := httptest.NewRecorder()
+
+	c := echo.New().NewContext(req, res)
+
+	h := ts.srv.handleGetSignals(c)
+
+	b, err := io.ReadAll(res.Body)
+	if err != nil {
+		ts.T().Errorf("error reading response body: %s", err)
+	}
+
+	r := models.SignalResponse{}
+	err = json.Unmarshal(b, &r)
+	if err != nil {
+		ts.T().Errorf("error unmashalling json: %s", err)
+	}
+
+	t := models.SetupThreeTracksEachWithFiveSignals()
+
+	var sigs []models.Signal
+
+	for _, t := range t {
+		sigs = append(sigs, t.SignalIds...)
+	}
+
+	if assert.NoError(ts.T(), h) {
+		assert.Equal(ts.T(), http.StatusOK, res.Code)
+		assert.Equal(ts.T(), len(sigs), len(r.Signals))
+	}
+}
