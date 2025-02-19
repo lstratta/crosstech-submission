@@ -1,12 +1,14 @@
 # test the application code
+# pgadmin does not need to run
+# cleanup first to remove any leftover data
 test: cleanup
 	@echo "starting containers"
-	@docker compose -f docker/compose.yaml up -d 
+	@docker compose -f docker/compose.yaml up -d postgres
 	@sleep 2 # prevents panic when not able to connect to db
 	@go test -v ./...
 	@echo "cleaning up.. "
-	@docker stop pgadmin postgres
-	@docker rm pgadmin postgres
+	@docker stop postgres
+	@docker rm postgres
 .PHONY: test
 
 # build the binary after testing the code
