@@ -154,7 +154,7 @@ func (ts *TestSuite) TestHandlePostTrack_Returns201CreatedRecord() {
 		},
 	}
 
-	d, err := json.Marshal(&trk)
+	d, err := json.Marshal(trk)
 	if err != nil {
 		ts.T().Errorf("error marshalling data: %s", err)
 	}
@@ -179,8 +179,9 @@ func (ts *TestSuite) TestHandlePostTrack_Returns201CreatedRecord() {
 	}
 
 	if assert.NoError(ts.T(), h) {
-		assert.Equal(ts.T(), http.StatusOK, res.Code)
+		assert.Equal(ts.T(), http.StatusCreated, res.Code)
 		assert.Equal(ts.T(), 1, len(r.Tracks))
+		assert.Equal(ts.T(), *trk, r.Tracks[0])
 	}
 }
 
@@ -192,7 +193,7 @@ func (ts *TestSuite) TestHandlePostSignal_Returns201CreatedRecord() {
 		Mileage:    1.2345,
 	}
 
-	d, err := json.Marshal(&sig)
+	d, err := json.Marshal(sig)
 	if err != nil {
 		ts.T().Errorf("error marshalling data: %s", err)
 	}
@@ -217,7 +218,83 @@ func (ts *TestSuite) TestHandlePostSignal_Returns201CreatedRecord() {
 	}
 
 	if assert.NoError(ts.T(), h) {
-		assert.Equal(ts.T(), http.StatusOK, res.Code)
+		assert.Equal(ts.T(), http.StatusCreated, res.Code)
 		assert.Equal(ts.T(), 1, len(r.Signals))
+		assert.Equal(ts.T(), *sig, r.Signals[0])
+	}
+}
+
+func (ts *TestSuite) TestHandlePutSignal_Returns200AndCreatedRecord() {
+	sig := &models.Signal{
+		SignalId:   453,
+		SignalName: "SIG:AW148(CO) ACTON WELLS JCN -- UPDATED",
+		ELR:        "LPC5",
+		Mileage:    3.1745,
+	}
+
+	d, err := json.Marshal(sig)
+	if err != nil {
+		ts.T().Errorf("error marshalling data: %s", err)
+	}
+	rd := bytes.NewReader(d)
+
+	req := httptest.NewRequest(http.MethodPost, "/signals", rd)
+	res := httptest.NewRecorder()
+
+	c := echo.New().NewContext(req, res)
+
+	h := ts.srv.handleUpdateSignal(c)
+
+	b, err := io.ReadAll(res.Body)
+	if err != nil {
+		ts.T().Errorf("error reading response body: %s", err)
+	}
+
+	r := models.SignalResponse{}
+	err = json.Unmarshal(b, &r)
+	if err != nil {
+		ts.T().Errorf("error unmashalling json: %s", err)
+	}
+
+	if assert.NoError(ts.T(), h) {
+		assert.Equal(ts.T(), http.StatusOK, res.Code)
+		assert.Equal(ts.T(), sig.SignalName, r.Signals[0].SignalName)
+	}
+}
+
+func (ts *TestSuite) TestHandlePutTrack_Returns200AndCreatedRecord() {
+	trk := &models.Track{
+		TrackId: 55,
+		Source:  "Acton Central -- UPDATED",
+		Target:  "Willesden Junction",
+	}
+
+	d, err := json.Marshal(trk)
+	if err != nil {
+		ts.T().Errorf("error marshalling data: %s", err)
+	}
+	rd := bytes.NewReader(d)
+
+	req := httptest.NewRequest(http.MethodPost, "/tracks", rd)
+	res := httptest.NewRecorder()
+
+	c := echo.New().NewContext(req, res)
+
+	h := ts.srv.handleUpdateTrack(c)
+
+	b, err := io.ReadAll(res.Body)
+	if err != nil {
+		ts.T().Errorf("error reading response body: %s", err)
+	}
+
+	r := models.TrackResponse{}
+	err = json.Unmarshal(b, &r)
+	if err != nil {
+		ts.T().Errorf("error unmashalling json: %s", err)
+	}
+
+	if assert.NoError(ts.T(), h) {
+		assert.Equal(ts.T(), http.StatusOK, res.Code)
+		assert.Equal(ts.T(), trk.Source, r.Tracks[0].Source)
 	}
 }

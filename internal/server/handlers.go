@@ -114,7 +114,7 @@ func (s *Server) handlePostTrack(c echo.Context) error {
 
 	b, err := io.ReadAll(c.Request().Body)
 	if err != nil {
-		return trackResponse(c, http.StatusInternalServerError, err, "error reading request body", nil)
+		return trackResponse(c, http.StatusBadRequest, err, "error reading request body", nil)
 	}
 
 	t := models.Track{}
@@ -137,16 +137,12 @@ func (s *Server) handlePostTrack(c echo.Context) error {
 func (s *Server) handlePostSignal(c echo.Context) error {
 	b, err := io.ReadAll(c.Request().Body)
 	if err != nil {
-		return signalResponse(c, http.StatusInternalServerError, err, "error reading request body", nil)
+		return signalResponse(c, http.StatusBadRequest, err, "error reading request body", nil)
 	}
 
 	sig := models.Signal{}
 	if err = json.Unmarshal(b, &sig); err != nil {
 		return signalResponse(c, http.StatusInternalServerError, err, "error unmarshalling json", nil)
-	}
-
-	if err != nil {
-		return signalResponse(c, http.StatusBadRequest, err, "signal struct failed validatiion", nil)
 	}
 
 	res, err := s.db.CreateSignal(&sig)
@@ -245,7 +241,7 @@ func signalResponse(c echo.Context, status int, err error, message string, res [
 		})
 	}
 
-	return c.JSON(http.StatusOK, &models.SignalResponse{
+	return c.JSON(status, &models.SignalResponse{
 		Message: message,
 		Signals: res,
 	})
@@ -265,7 +261,7 @@ func trackResponse(c echo.Context, status int, err error, message string, res []
 		})
 	}
 
-	return c.JSON(http.StatusOK, &models.TrackResponse{
+	return c.JSON(status, &models.TrackResponse{
 		Message: message,
 		Tracks:  res,
 	})
