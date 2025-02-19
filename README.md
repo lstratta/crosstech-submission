@@ -2,6 +2,12 @@
 
 ## My Process
 
+I started off by reading over the task. I broke it down into sections and created mini-tasks from this. This allowed me to see the project with the steps I needed to take.
+
+I then examined the `data.json` file. I noted a few things from this. Firstly, the `NaN` in the `mileage` field occurences would need to be dealt with, as mentioned in the task.
+
+There were also a few situations I found where `signal_name` field had a JSON `null` value that would 
+
 ## What this application does
 
 ## Project Structure and Extras

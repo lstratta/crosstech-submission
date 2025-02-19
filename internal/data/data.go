@@ -21,11 +21,8 @@ func ParseJsonData() ([]models.Track, error) {
 
 	strSplit := strings.Split(string(jsonData), "\n")
 	for _, s := range strSplit {
-
 		s2 := strings.Replace(s, "NaN", "0.0", -1)
-		newS := strings.Replace(s2, "null", "\"null\"", -1)
-
-		newStr = newStr + newS
+		newStr = newStr + s2
 	}
 
 	if err = json.Unmarshal([]byte(newStr), &tArr); err != nil {
