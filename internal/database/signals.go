@@ -1,3 +1,4 @@
+// signals.go file holds all the functions relating to database access for signals
 package database
 
 import (
@@ -18,7 +19,7 @@ func (db *DB) Signals() ([]models.Signal, error) {
 	return s, nil
 }
 
-func (db *DB) SignalsById(id string) ([]models.Signal, error) {
+func (db *DB) SignalsById(id int) ([]models.Signal, error) {
 	s := []models.Signal{}
 	_, err := db.conn.Query(&s, `
 	  SELECT * FROM signals

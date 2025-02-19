@@ -1,3 +1,7 @@
+// database configuration file
+// the models that are used in the application are
+// added here
+
 package database
 
 import (
@@ -6,12 +10,6 @@ import (
 	"github.com/lstratta/crosstech-submission/config"
 	"github.com/lstratta/crosstech-submission/internal/models"
 )
-
-// func init() {
-// 	// Register many to many model so ORM can better recognize m2m relation.
-// 	// This should be done before dependant models are used.
-// 	orm.RegisterTable((*models.TrackToSignal)(nil))
-// }
 
 type DB struct {
 	conn *pg.DB

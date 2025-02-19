@@ -1,3 +1,6 @@
+// handlers.go holds all the handler functions that then interact with the database
+// Usually there would be another layer that handles business logic
+// but there wasn't a need in this insance
 package server
 
 import (
@@ -16,17 +19,24 @@ type response struct {
 
 // GET methods
 
+// Test function
 func (s *Server) handlePing(c echo.Context) error {
 	return c.JSON(http.StatusOK, &response{
 		Message: "Pong!",
 	})
 }
 
+// Returns all tracks
 // handles route both with and without query param
 func (s *Server) handleGetTracks(c echo.Context) error {
-	sigId := c.QueryParam("signal-id")
-	if sigId != "" {
-		t, err := s.db.TracksBySignalId(sigId)
+	p := c.QueryParam("signal-id")
+	if p != "" {
+		id, err := strconv.Atoi(p)
+		if err != nil {
+			return trackResponse(c, http.StatusBadRequest, err, "cannot convert query param to integer", nil)
+		}
+
+		t, err := s.db.TracksBySignalId(id)
 		if err != nil {
 			return trackResponse(c, http.StatusInternalServerError, err, "error finding tracks by signal id", nil)
 		}
@@ -45,8 +55,14 @@ func (s *Server) handleGetTracks(c echo.Context) error {
 	})
 }
 
+// Returns all tracks with a specific ID
 func (s *Server) handleGetTrackByTrackId(c echo.Context) error {
-	id := c.Param("id")
+	p := c.Param("id")
+	id, err := strconv.Atoi(p)
+	if err != nil {
+		return trackResponse(c, http.StatusBadRequest, err, "make sure param is an integer", nil)
+	}
+
 	t, err := s.db.TracksById(id)
 	if err != nil {
 		return trackResponse(c, http.StatusInternalServerError, err, "error finding tracks by id", nil)
@@ -60,6 +76,7 @@ func (s *Server) handleGetTrackByTrackId(c echo.Context) error {
 
 }
 
+// Returns a slice of signals
 func (s *Server) handleGetSignals(c echo.Context) error {
 	sig, err := s.db.Signals()
 	if err != nil {
@@ -71,8 +88,13 @@ func (s *Server) handleGetSignals(c echo.Context) error {
 	})
 }
 
+// Returns all signals with a specific ID
 func (s *Server) handleGetSignalBySignalId(c echo.Context) error {
-	id := c.Param("id")
+	p := c.Param("id")
+	id, err := strconv.Atoi(p)
+	if err != nil {
+		return trackResponse(c, http.StatusBadRequest, err, "make sure param is an integer", nil)
+	}
 	sig, err := s.db.SignalsById(id)
 	if err != nil {
 		return signalResponse(c, http.StatusInternalServerError, err, "error finding signals by id", nil)
@@ -88,6 +110,7 @@ func (s *Server) handleGetSignalBySignalId(c echo.Context) error {
 
 // POST methods
 
+// Creates a new track
 func (s *Server) handlePostTrack(c echo.Context) error {
 
 	b, err := io.ReadAll(c.Request().Body)
@@ -111,7 +134,8 @@ func (s *Server) handlePostTrack(c echo.Context) error {
 
 }
 
-func (s *Server) handPostSignal(c echo.Context) error {
+// Creates a new signal
+func (s *Server) handlePostSignal(c echo.Context) error {
 	b, err := io.ReadAll(c.Request().Body)
 	if err != nil {
 		return signalResponse(c, http.StatusInternalServerError, err, "error reading request body", nil)
@@ -120,6 +144,10 @@ func (s *Server) handPostSignal(c echo.Context) error {
 	sig := models.Signal{}
 	if err = json.Unmarshal(b, &sig); err != nil {
 		return signalResponse(c, http.StatusInternalServerError, err, "error unmarshalling json", nil)
+	}
+
+	if err != nil {
+		return signalResponse(c, http.StatusBadRequest, err, "signal struct failed validatiion", nil)
 	}
 
 	res, err := s.db.CreateSignal(&sig)
@@ -132,6 +160,7 @@ func (s *Server) handPostSignal(c echo.Context) error {
 
 // PUT methods
 
+// Updates a signal
 func (s *Server) handleUpdateSignal(c echo.Context) error {
 
 	b, err := io.ReadAll(c.Request().Body)
@@ -151,6 +180,7 @@ func (s *Server) handleUpdateSignal(c echo.Context) error {
 	return signalResponse(c, http.StatusOK, nil, "update successful", []models.Signal{*res})
 }
 
+// Updates a track
 func (s *Server) handleUpdateTrack(c echo.Context) error {
 
 	b, err := io.ReadAll(c.Request().Body)
@@ -172,6 +202,7 @@ func (s *Server) handleUpdateTrack(c echo.Context) error {
 
 // DELETE methods
 
+// Deletes a signal
 func (s *Server) handleDeleteSignal(c echo.Context) error {
 	p := c.Param("id")
 	id, err := strconv.Atoi(p)
@@ -186,6 +217,7 @@ func (s *Server) handleDeleteSignal(c echo.Context) error {
 	return signalResponse(c, http.StatusNoContent, nil, "delete successful", nil)
 }
 
+// Deletes a track
 func (s *Server) handleDeleteTrack(c echo.Context) error {
 	p := c.Param("id")
 	id, err := strconv.Atoi(p)
@@ -200,8 +232,8 @@ func (s *Server) handleDeleteTrack(c echo.Context) error {
 	return trackResponse(c, http.StatusNoContent, nil, "delete successful", nil)
 }
 
+// wrapper for responding to signal requests
 func signalResponse(c echo.Context, status int, err error, message string, res []models.Signal) error {
-
 	if err != nil {
 		return c.JSON(status, &models.SignalResponse{
 			Signals: []models.Signal{},
@@ -220,8 +252,8 @@ func signalResponse(c echo.Context, status int, err error, message string, res [
 	})
 }
 
+// wrapper for responding to track requests
 func trackResponse(c echo.Context, status int, err error, message string, res []models.Track) error {
-
 	if err != nil {
 		return c.JSON(status, &models.TrackResponse{
 			Tracks: []models.Track{},

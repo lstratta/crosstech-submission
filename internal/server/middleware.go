@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+// middleware for the server
 func (s *Server) middleware() {
 	s.router.Use(
 		middleware.CORSWithConfig(

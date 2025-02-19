@@ -1,3 +1,6 @@
+// server.go handles all the server creation code
+// this allows us to make a robust server with a lot of
+// extensible features
 package server
 
 import (
@@ -12,6 +15,8 @@ import (
 	"github.com/lstratta/crosstech-submission/internal/models"
 )
 
+// the server is based around this struct, which uses the echo
+// framework as a router and http.handler
 type Server struct {
 	srv    *http.Server
 	router *echo.Echo
@@ -22,6 +27,7 @@ type Server struct {
 func New(c config.Config) (*Server, error) {
 	e := echo.New()
 
+	// instantiate the server
 	s := &Server{
 		srv: &http.Server{
 			Addr:    fmt.Sprintf("%s:%s", c.Host, c.Port),
@@ -31,6 +37,7 @@ func New(c config.Config) (*Server, error) {
 		conf:   c,
 	}
 
+	// setup a local db connection
 	db, err := database.SetupLocalDB(s.conf)
 	if err != nil {
 		return nil, fmt.Errorf("error setting up database: %v", err)
@@ -38,6 +45,7 @@ func New(c config.Config) (*Server, error) {
 
 	s.db = db
 
+	// check db connectivity and migrate tables
 	ctx := context.Background()
 	if err := s.db.Conn().Ping(ctx); err != nil {
 		return nil, fmt.Errorf("error pinging database - it may not be ready: %v", err)
@@ -47,6 +55,7 @@ func New(c config.Config) (*Server, error) {
 		return nil, fmt.Errorf("error migrating tables: %v", err)
 	}
 
+	// insert json data
 	trackData, err := data.ParseJsonData()
 	if err != nil {
 		return nil, fmt.Errorf("error inputing data: %v", err)
@@ -66,6 +75,8 @@ func New(c config.Config) (*Server, error) {
 	return s, nil
 }
 
+// the function that implements the middleware, routes,
+// and starts the server
 func (s *Server) ListenAndServe() error {
 	s.middleware()
 	s.routes()

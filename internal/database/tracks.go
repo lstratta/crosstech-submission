@@ -1,3 +1,5 @@
+// tracks.go file holds all the functions relating to database access for tracks
+// This helps to reduce file size and makes it easier to maintain
 package database
 
 import (
@@ -18,7 +20,7 @@ func (db *DB) Tracks() ([]models.Track, error) {
 	return t, nil
 }
 
-func (db *DB) TracksById(id string) ([]models.Track, error) {
+func (db *DB) TracksById(id int) ([]models.Track, error) {
 	t := []models.Track{}
 	_, err := db.conn.Query(&t, `
 	  SELECT * FROM tracks
@@ -32,7 +34,7 @@ func (db *DB) TracksById(id string) ([]models.Track, error) {
 	return t, nil
 }
 
-func (db *DB) TracksBySignalId(id string) ([]models.Track, error) {
+func (db *DB) TracksBySignalId(id int) ([]models.Track, error) {
 	t := []models.Track{}
 
 	_, err := db.conn.Query(&t, `

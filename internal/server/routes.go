@@ -1,3 +1,4 @@
+// simply holds all the routes for endpoints
 package server
 
 func (s *Server) routes() {
@@ -10,7 +11,7 @@ func (s *Server) routes() {
 	r.GET("/signals/:id", s.handleGetSignalBySignalId)
 
 	r.POST("/tracks", s.handlePostTrack)
-	r.POST("/signals", s.handPostSignal)
+	r.POST("/signals", s.handlePostSignal)
 
 	r.PUT("/tracks", s.handleUpdateTrack)
 	r.PUT("/signals", s.handleUpdateSignal)
