@@ -27,28 +27,16 @@ func (s *Server) handleGetTracks(c echo.Context) error {
 	if sigId != "" {
 		t, err := s.db.TracksBySignalId(sigId)
 		if err != nil {
-			return c.JSON(http.StatusInternalServerError, &models.TrackResponse{
-				Tracks: []models.Track{},
-				Errors: []models.Errors{
-					{
-						Error:   "internal server error",
-						Message: "there was an error with the server",
-						Detail:  err.Error(),
-					},
-				},
-			})
+			return trackResponse(c, http.StatusInternalServerError, err, "error finding tracks by signal id", nil)
 		}
 
-		return c.JSON(http.StatusOK, &models.TrackResponse{
-			Tracks: t,
-		})
+		return trackResponse(c, http.StatusOK, err, "request successful", t)
+
 	}
 
 	t, err := s.db.Tracks()
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &models.TrackResponse{
-			Tracks: []models.Track{},
-		})
+		return trackResponse(c, http.StatusInternalServerError, err, "error finding tracks", nil)
 	}
 
 	return c.JSON(http.StatusOK, &models.TrackResponse{
@@ -60,43 +48,21 @@ func (s *Server) handleGetTrackByTrackId(c echo.Context) error {
 	id := c.Param("id")
 	t, err := s.db.TracksById(id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &models.TrackResponse{
-			Tracks: []models.Track{},
-			Errors: []models.Errors{
-				{
-					Error:   "internal server error",
-					Message: "there was an error with the server",
-					Detail:  err.Error(),
-				},
-			},
-		})
+		return trackResponse(c, http.StatusInternalServerError, err, "error finding tracks by id", nil)
 	}
 
 	if len(t) < 1 {
-		return c.JSON(http.StatusOK, &models.TrackResponse{
-			Tracks:  t,
-			Message: "request OK, no data found",
-		})
+		return trackResponse(c, http.StatusOK, err, "request successful, no data found", t)
 	}
 
-	return c.JSON(http.StatusOK, &models.TrackResponse{
-		Tracks: t,
-	})
+	return trackResponse(c, http.StatusOK, err, "request successful", t)
+
 }
 
 func (s *Server) handleGetSignals(c echo.Context) error {
 	sig, err := s.db.Signals()
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &models.SignalResponse{
-			Signals: []models.Signal{},
-			Errors: []models.Errors{
-				{
-					Error:   "internal server error",
-					Message: "there was an error with the server",
-					Detail:  err.Error(),
-				},
-			},
-		})
+		return signalResponse(c, http.StatusInternalServerError, err, "error finding signals", nil)
 	}
 
 	return c.JSON(http.StatusOK, &models.SignalResponse{
@@ -108,28 +74,15 @@ func (s *Server) handleGetSignalBySignalId(c echo.Context) error {
 	id := c.Param("id")
 	sig, err := s.db.SignalsById(id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &models.SignalResponse{
-			Signals: []models.Signal{},
-			Errors: []models.Errors{
-				{
-					Error:   "internal server error",
-					Message: "there was an error with the server",
-					Detail:  err.Error(),
-				},
-			},
-		})
+		return signalResponse(c, http.StatusInternalServerError, err, "error finding signals by id", nil)
 	}
 
 	if len(sig) < 1 {
-		return c.JSON(http.StatusOK, &models.SignalResponse{
-			Signals: sig,
-			Message: "request OK, no data found",
-		})
+		return signalResponse(c, http.StatusOK, err, "request successful, but no data found", sig)
 	}
 
-	return c.JSON(http.StatusOK, &models.SignalResponse{
-		Signals: sig,
-	})
+	return signalResponse(c, http.StatusOK, err, "request successful", sig)
+
 }
 
 // POST method calls
@@ -138,40 +91,72 @@ func (s *Server) handlePostTrack(c echo.Context) error {
 
 	b, err := io.ReadAll(c.Request().Body)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &models.TrackResponse{
-			Tracks: []models.Track{},
-			Errors: []models.Errors{
-				{
-					Error:   "internal server error",
-					Message: "there was an error with the server",
-					Detail:  err.Error(),
-				},
-			},
-		})
+		return trackResponse(c, http.StatusInternalServerError, err, "error reading request body", nil)
 	}
 
 	t := models.Track{}
 	if err = json.Unmarshal(b, &t); err != nil {
-		return c.JSON(http.StatusInternalServerError, &models.TrackResponse{
-			Tracks: []models.Track{},
+		return trackResponse(c, http.StatusInternalServerError, err, "error unmarshalling body json", nil)
+
+	}
+
+	res, err := s.db.CreateTrack(&t)
+	if err != nil {
+		return trackResponse(c, http.StatusInternalServerError, err, "error creating track record", nil)
+
+	}
+
+	return trackResponse(c, http.StatusCreated, err, "successfully created", []models.Track{*res})
+
+}
+
+func (s *Server) handPostSignal(c echo.Context) error {
+	b, err := io.ReadAll(c.Request().Body)
+	if err != nil {
+		return signalResponse(c, http.StatusInternalServerError, err, "error reading request body", nil)
+	}
+
+	sig := models.Signal{}
+	if err = json.Unmarshal(b, &sig); err != nil {
+		return signalResponse(c, http.StatusInternalServerError, err, "error unmarshalling json", nil)
+	}
+
+	res, err := s.db.CreateSignal(&sig)
+	if err != nil {
+		return signalResponse(c, http.StatusInternalServerError, err, "error creating signal record", nil)
+	}
+
+	return signalResponse(c, http.StatusCreated, err, "successfully created", []models.Signal{*res})
+}
+
+func signalResponse(c echo.Context, status int, err error, message string, res []models.Signal) error {
+
+	if err != nil {
+		return c.JSON(status, &models.SignalResponse{
+			Signals: []models.Signal{},
 			Errors: []models.Errors{
 				{
-					Error:   "internal server error",
-					Message: "there was an error with the server",
+					Message: message,
 					Detail:  err.Error(),
 				},
 			},
 		})
 	}
 
-	res, err := s.db.CreateTrack(&t)
+	return c.JSON(http.StatusOK, &models.SignalResponse{
+		Message: message,
+		Signals: res,
+	})
+}
+
+func trackResponse(c echo.Context, status int, err error, message string, res []models.Track) error {
+
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &models.TrackResponse{
+		return c.JSON(status, &models.TrackResponse{
 			Tracks: []models.Track{},
 			Errors: []models.Errors{
 				{
-					Error:   "internal server error",
-					Message: "there was an error with the server",
+					Message: message,
 					Detail:  err.Error(),
 				},
 			},
@@ -179,59 +164,7 @@ func (s *Server) handlePostTrack(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, &models.TrackResponse{
-		Message: "POST successful",
-		Tracks: []models.Track{
-			{TrackId: res.TrackId,
-				Source:    res.Source,
-				Target:    res.Target,
-				SignalIds: res.SignalIds},
-		},
-	})
-}
-
-func (s *Server) handPostSignal(c echo.Context) error {
-	b, err := io.ReadAll(c.Request().Body)
-	if err != nil {
-		return signalResponse(c, err, "internal server error", nil)
-	}
-
-	sig := models.Signal{}
-	if err = json.Unmarshal(b, &sig); err != nil {
-		return signalResponse(c, err, "internal server error", nil)
-	}
-
-	res, err := s.db.CreateSignal(&sig)
-	if err != nil {
-		return signalResponse(c, err, "internal server error", res)
-	}
-
-	return signalResponse(c, err, "successfully created", res)
-}
-
-func signalResponse(c echo.Context, err error, message string, res *models.Signal) error {
-
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, &models.SignalResponse{
-			Signals: []models.Signal{},
-			Errors: []models.Errors{
-				{
-					Error:   "internal server error",
-					Message: "there was an error with the server",
-					Detail:  err.Error(),
-				},
-			},
-		})
-	}
-
-	c.JSON(http.StatusOK, &models.SignalResponse{
-		Message: "POST successful",
-		Signals: []models.Signal{
-			{
-				SignalId:   res.SignalId,
-				SignalName: res.SignalName,
-				ELR:        res.ELR,
-				Mileage:    res.Mileage,
-			},
-		},
+		Message: message,
+		Tracks:  res,
 	})
 }
