@@ -1,9 +1,14 @@
 # Luke Stratta - Crosstech Backend Developer Challenge
 
+Thank you for taking the time to look at my application. I have included a table of contents for easy navigating around this README.
+
+If you want to get started trying out the application, head to [Getting started](#getting-started).
+
 ## Contents
-1. [My process](#my-process)
+1. [My process](#my-process-and-the-application)
 1. [What this application does](#what-this-application-does)
 1. [Project structure and extras](#project-structure-and-extras)
+1. [Assumptions, considerations, and improvements](#assumptions-considerations-and-improvements)
 1. [Getting started](#getting-started)
 1. [Accessing the applicatioin](#using-the-application)
 
@@ -26,7 +31,7 @@
 1. [GET /signals/:id](#get-signalsid)
 1. [DELETE /signals/:id](#delete-signalsid)
 
-## My Process
+## My process and the application
 
 I started off by reading over the task. I broke it down into sections and created mini-tasks from this. This allowed me to see the project with the steps I needed to take.
 
@@ -42,13 +47,13 @@ Next it was time to start setting up the project.
 
 I wasn't familiar with the Echo web framework or pg-go, so I had to read up on the documentation, and use those as stepping stones to build out the application.
 
-I have added comments throught out the code where I have not followed the exact way either of the modules have suggested it being used.
+I have added comments throught out the code where I have not followed the exact way either of the modules have suggested it being used and why I did that.
 
 I then got into the meat and potatoes of the application and built out all the routes and database interactions.
 
-I added tests for all the routes, but I know that these can be vastly improved. I will get into compromises I have made at the end of the README.
+I added tests for all the routes, but I know that these can be vastly improved. I will get into conisderations for developing out this project and compromises I have made later on in this README.
 
-## What this application does
+### What this application does
 
 This application is a simple RESTful API with CRUD functionality to manage track and signal data.
 
@@ -58,7 +63,7 @@ You can also make raw SQL queries using the accompanying PGAdmin instance.
 
 See [Getting Started](#getting-started) to try it out.
 
-## Project Structure and Extras
+### Project Structure and Extras
 
 The `main.go` file lives in the `cmd/` directory. This is the main application directory and the entrypoint for the application.
 
@@ -72,9 +77,33 @@ Air is used as a hot-reload support tool for development. It helps when quickly 
 
 A Dockerfile to build a container image is available.
 
-## Considerations and compromises
+### Assumptions, considerations, and improvements
 
+#### Assumptions made
 
+I had to make a few assumptions for this project. Most of them revolved around what the data was actually showing. I had to assume that there were never going to be two tracks or signals that are the same.
+
+If this was a real world project where I was able to interact with subject matter experts and other stakeholders, I would make sure that I have the contextual knowledge needed to be able to produce an application to spec while being able to provide consistent updates and implement feedback.
+
+#### Considerations
+
+To get this project done within the allotted timeframe, I had to reconsider a few things.
+
+Data could have been handled better within the application, especially around the signals. There were lots of signals that had the same `signal_id` but the rest of the data with in the object would vary. This has caused some issues, so to resolve this, a primary key system would have been used throughout the application, rather than using the `signal_id`.
+
+The tests only cover "happy path" situations. They don't cover malformed data or incorrect inputs, but there is some validation there to cover these instances, just not recorded in the tests. I would certainly spend time building these out to cover more of the code, and start to take note of any edge cases that I, and other people, experience.
+
+On the validation side, I ran out of time here. Apart from a couple of `BadRequest` status codes, there is no input validation on the code. It is something I would take time to implement.
+
+#### Improvements I would like to make
+
+As noted above, I would like to move to a unique primary key system throughout the application, to guarantee data uniqueness. This may have led to duplicate data, but if I had more time, I would also implement data normalisatioin to see if any data could be combined into one object.
+
+The handlers currently inteface directly through the database, but because there wasn't much business logic for this project, I felt it was an sensible omission to save time and prevent complexity. I would implement a service layer that would handle these interactions.
+
+Tests would be greatly improved make sure endpoints, business logic, and data access functions are adhering strict standards.
+
+Validation would be implemented to prevent any unwanted effects happening on the server with unvalidated code.
 
 ## Getting Started 
 
