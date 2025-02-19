@@ -60,3 +60,28 @@ func (ts *TestSuite) TestHandleGetTracks_ReturnsTracks() {
 		assert.Equal(ts.T(), models.TrackResponse{Tracks: models.SetupOneTrack(), Message: "request successful"}, r)
 	}
 }
+
+func (ts *TestSuite) TestHandleGetTracksBySignalId_ReturnsAllTracksWithThatId() {
+	req := httptest.NewRequest(http.MethodGet, "/tracks/", nil)
+	res := httptest.NewRecorder()
+
+	c := echo.New().NewContext(req, res)
+
+	h := ts.srv.handleGetTracks(c)
+
+	b, err := io.ReadAll(res.Body)
+	if err != nil {
+		ts.T().Errorf("error reading response body: %s", err)
+	}
+
+	r := models.TrackResponse{}
+	err = json.Unmarshal(b, &r)
+	if err != nil {
+		ts.T().Errorf("error unmashalling json: %s", err)
+	}
+
+	if assert.NoError(ts.T(), h) {
+		assert.Equal(ts.T(), http.StatusOK, res.Code)
+		assert.Equal(ts.T(), models.TrackResponse{Tracks: models.SetupOneTrack(), Message: "request successful"}, r)
+	}
+}

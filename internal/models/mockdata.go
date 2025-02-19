@@ -1,6 +1,6 @@
 package models
 
-func SetupOneTrackWithFiveSignals() []Track {
+func SetupTwoTracksEachWithFiveSignals() []Track {
 	return []Track{
 		{
 			TrackId: 55,
@@ -30,6 +30,43 @@ func SetupOneTrackWithFiveSignals() []Track {
 					SignalName: "SIG:WS16(CO)WILLESDEN JCN",
 					ELR:        "KXD",
 					Mileage:    7.8087,
+				},
+				{
+					SignalId:   13720,
+					SignalName: "SIG:WS22(CO)WILLESDEN JCN",
+					ELR:        "KDX",
+					Mileage:    6.4412,
+				},
+			},
+		},
+		{
+			TrackId: 55,
+			Source:  "Acton Central",
+			Target:  "Willesden Junction",
+			SignalIds: []Signal{
+				{
+					SignalId:   13721,
+					SignalName: "SIG:WS23(CO)WILLESDEN JCN",
+					ELR:        "KDX",
+					Mileage:    6.6028,
+				},
+				{
+					SignalId:   13722,
+					SignalName: "SIG:WS25(CO)WILLESDEN JCN",
+					ELR:        "DKX",
+					Mileage:    6.6702,
+				},
+				{
+					SignalId:   13871,
+					SignalName: "SIG:WM126(CO)WILLESDEN JCN",
+					ELR:        "MDF1",
+					Mileage:    6.8593,
+				},
+				{
+					SignalId:   13873,
+					SignalName: "SIG:WM129(CO)WILLESDEN JCN",
+					ELR:        "FDM1",
+					Mileage:    7.8602,
 				},
 				{
 					SignalId:   13720,
