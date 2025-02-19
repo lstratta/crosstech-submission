@@ -12,6 +12,9 @@ import (
 )
 
 // basic set of tests for all the handlers
+// these tests require improvement in that the database should have been mocked
+// currently they use the real database, but the `make test` command automatically
+// sets up and tears down the test containers
 
 func (ts *TestSuite) TestHandlePing_ReturnsPongAsMessageInJson() {
 
@@ -36,7 +39,7 @@ func (ts *TestSuite) TestHandlePing_ReturnsPongAsMessageInJson() {
 	}
 }
 
-func (ts *TestSuite) TestHandleGetTracks_ReturnsTracks() {
+func (ts *TestSuite) TestHandleGetTracks_Returns200Tracks() {
 	req := httptest.NewRequest(http.MethodGet, "/tracks", nil)
 	res := httptest.NewRecorder()
 
@@ -55,13 +58,16 @@ func (ts *TestSuite) TestHandleGetTracks_ReturnsTracks() {
 		ts.T().Errorf("error unmashalling json: %s", err)
 	}
 
+	t := models.SetupThreeTracks()
+
 	if assert.NoError(ts.T(), h) {
 		assert.Equal(ts.T(), http.StatusOK, res.Code)
-		assert.Equal(ts.T(), models.TrackResponse{Tracks: models.SetupThreeTracks(), Message: "request successful"}, r)
+		assert.Equal(ts.T(), models.TrackResponse{Tracks: t, Message: "request successful"}, r)
+		assert.Equal(ts.T(), len(t), len(r.Tracks))
 	}
 }
 
-func (ts *TestSuite) TestHandleGetTracksBySignalId_ReturnsAllTracksWithThatId() {
+func (ts *TestSuite) TestHandleGetTracksBySignalId_Returns200AllTracksWithThatId() {
 	req := httptest.NewRequest(http.MethodGet, "/tracks?query-id=453", nil)
 	res := httptest.NewRecorder()
 
@@ -80,8 +86,11 @@ func (ts *TestSuite) TestHandleGetTracksBySignalId_ReturnsAllTracksWithThatId() 
 		ts.T().Errorf("error unmashalling json: %s", err)
 	}
 
+	t := models.SetupThreeTracks()
+
 	if assert.NoError(ts.T(), h) {
 		assert.Equal(ts.T(), http.StatusOK, res.Code)
+		assert.Equal(ts.T(), len(t), len(r.Tracks))
 		assert.Equal(ts.T(), 55, r.Tracks[0].TrackId)
 		assert.Equal(ts.T(), 3247, r.Tracks[1].TrackId)
 	}

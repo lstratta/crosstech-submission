@@ -11,7 +11,9 @@ import (
 func (db *DB) Tracks() ([]models.Track, error) {
 	t := []models.Track{}
 	_, err := db.conn.Query(&t, `
-	  SELECT * FROM tracks;
+	  SELECT * 
+	  FROM tracks
+	  ORDER BY track_id ASC;
 	`)
 	if err != nil {
 		return nil, fmt.Errorf("error querying database for tracks: %v", err)

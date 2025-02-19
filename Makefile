@@ -1,8 +1,10 @@
 # test the application code
-test: 
+test: cleanup
+	@echo "starting containers"
 	@docker compose -f docker/compose.yaml up -d 
 	@sleep 2 # prevents panic when not able to connect to db
 	@go test -v ./...
+	@echo "cleaning up.. "
 	@docker stop pgadmin postgres
 	@docker rm pgadmin postgres
 .PHONY: test
@@ -28,8 +30,8 @@ run:
 
 # stops and removes all containers 
 cleanup: 
-	@docker stop pgadmin postgres
-	@docker rm pgadmin postgres
+	@docker stop pgadmin postgres -i
+	@docker rm pgadmin postgres -i
 .PHONY: cleanup
 
 # TODO(luke): add docker build and run commands
