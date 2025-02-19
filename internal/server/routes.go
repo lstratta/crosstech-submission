@@ -15,4 +15,6 @@ func (s *Server) routes() {
 	r.PUT("/tracks", s.handleUpdateTrack)
 	r.PUT("/signals", s.handleUpdateSignal)
 
+	r.DELETE("/tracks/:id", s.handleDeleteTrack)
+	r.DELETE("/signals/:id", s.handleDeleteSignal)
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/lstratta/crosstech-submission/internal/models"
@@ -13,7 +14,7 @@ type response struct {
 	Message string `json:"message"`
 }
 
-// GET method calls
+// GET methods
 
 func (s *Server) handlePing(c echo.Context) error {
 	return c.JSON(http.StatusOK, &response{
@@ -85,7 +86,7 @@ func (s *Server) handleGetSignalBySignalId(c echo.Context) error {
 
 }
 
-// POST method calls
+// POST methods
 
 func (s *Server) handlePostTrack(c echo.Context) error {
 
@@ -167,6 +168,36 @@ func (s *Server) handleUpdateTrack(c echo.Context) error {
 	}
 
 	return trackResponse(c, http.StatusOK, nil, "update successful", []models.Track{*res})
+}
+
+// DELETE methods
+
+func (s *Server) handleDeleteSignal(c echo.Context) error {
+	p := c.Param("id")
+	id, err := strconv.Atoi(p)
+	if err != nil {
+		return signalResponse(c, http.StatusInternalServerError, err, "error converting string to int", nil)
+	}
+	err = s.db.DeleteSignalById(id)
+	if err != nil {
+		return signalResponse(c, http.StatusInternalServerError, err, "error deleting signal by id", nil)
+	}
+
+	return signalResponse(c, http.StatusNoContent, nil, "delete successful", nil)
+}
+
+func (s *Server) handleDeleteTrack(c echo.Context) error {
+	p := c.Param("id")
+	id, err := strconv.Atoi(p)
+	if err != nil {
+		return trackResponse(c, http.StatusInternalServerError, err, "error converting string to int", nil)
+	}
+	err = s.db.DeleteTrackById(id)
+	if err != nil {
+		return trackResponse(c, http.StatusInternalServerError, err, "error deleting track by id", nil)
+	}
+
+	return trackResponse(c, http.StatusNoContent, nil, "delete successful", nil)
 }
 
 func signalResponse(c echo.Context, status int, err error, message string, res []models.Signal) error {
