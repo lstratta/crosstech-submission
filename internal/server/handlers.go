@@ -5,12 +5,10 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
 
-	"github.com/go-pg/pg/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/lstratta/crosstech-submission/internal/models"
 )
@@ -202,9 +200,7 @@ func (s *Server) handleDeleteSignalById(c echo.Context) error {
 		return signalResponse(c, http.StatusBadRequest, err, "error converting string to int", nil)
 	}
 	err = s.db.DeleteSignalById(id)
-	if err == pg.ErrNoRows {
-		return signalResponse(c, http.StatusNotFound, err, "no record available to delete", nil)
-	} else if err != nil {
+	if err != nil {
 		return signalResponse(c, http.StatusInternalServerError, err, "error deleting signal by id", nil)
 	}
 
@@ -219,12 +215,7 @@ func (s *Server) handleDeleteTrackById(c echo.Context) error {
 		return trackResponse(c, http.StatusBadRequest, err, "error converting string to int", nil)
 	}
 	err = s.db.DeleteTrackById(id)
-	if err == pg.ErrNoRows {
-		fmt.Println("LLOOK HERE")
-		return signalResponse(c, http.StatusNotFound, err, "no record available to delete", nil)
-	} else if err != nil {
-		fmt.Println("OR HERE")
-
+	if err != nil {
 		return trackResponse(c, http.StatusInternalServerError, err, "error deleting track by id", nil)
 	}
 

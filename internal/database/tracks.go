@@ -128,13 +128,13 @@ func (db *DB) UpdateTrack(t *models.Track) (*models.Track, error) {
 }
 
 func (db *DB) DeleteTrackById(id int) error {
-	_, err := db.conn.ExecOne(
+	_, err := db.conn.Exec(
 		`
 			DELETE FROM tracks
 			WHERE track_id = ?0;
 		`, id)
 	if err != nil {
-		return err
+		return fmt.Errorf("error deleting track: %v", err)
 	}
 
 	return nil
