@@ -95,6 +95,8 @@ The tests only cover "happy path" situations. They don't cover malformed data or
 
 On the validation side, I ran out of time here. Apart from a couple of `BadRequest` status codes, there is no input validation on the code. It is something I would take time to implement.
 
+Another thing I ran out of time on was deploying it to GCP. I have a Dockerfile which is fully functioning and the whole application can be run as containers locally.
+
 #### Improvements I would like to make
 
 As noted above, I would like to move to a unique primary key system throughout the application, to guarantee data uniqueness. This may have led to duplicate data, but if I had more time, I would also implement data normalisatioin to see if any data could be combined into one object.
