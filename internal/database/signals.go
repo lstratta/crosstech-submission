@@ -16,8 +16,6 @@ func (db *DB) Signals() ([]models.Signal, error) {
 		return nil, fmt.Errorf("error querying database for signals: %v", err)
 	}
 
-	fmt.Println("DB SIGNALS, ", len(s))
-
 	return s, nil
 }
 
