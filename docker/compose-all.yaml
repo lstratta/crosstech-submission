@@ -1,0 +1,44 @@
+services:
+  track-sig: 
+    image: crosstech/track-sig:latest
+    container_name: track-sig
+    restart: always
+    ports:
+    - 7777:7777
+    networks:
+    - database-network
+    environment:
+      DATABASE_URI: "postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable"
+
+  postgres:
+    image: docker.io/postgres:${POSTGRES_VERSION_TAG}
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+    - 5432:5432
+    networks:
+    - database-network
+
+  pgadmin:
+    image: docker.io/elestio/pgadmin:${PGADMIN_VERSION_TAG}
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${ADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${ADMIN_PASSWORD}
+      PGADMIN_LISTEN_PORT: 5433
+    ports:
+    - 5433:5433
+    networks:
+    - database-network
+
+networks:
+  database-network:
+
+  
+
+

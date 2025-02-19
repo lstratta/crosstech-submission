@@ -37,4 +37,9 @@ cleanup:
 .PHONY: cleanup
 
 # TODO(luke): add docker build and run commands
-build-containers: test
+docker-build: test
+	@docker build . -t crosstech/track-sig:latest
+
+run-containers:
+	@docker compose -f docker/compose-all.yaml up -d 
+.PHONY: run-containers
