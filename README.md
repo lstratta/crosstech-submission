@@ -148,6 +148,22 @@ Firstly, copy the `docker/.env.example` file to `docker/.env`
 cp docker/.env.example docker/.env
 ```
 
+You will also find the application works with environment variables. You can export these if you would like to change the values. **They are configured even if you don't touch them**.
+
+For more information, see `config/config.go` on how I have handled envirionment variables.
+
+They are as follows with their default values:
+
+```bash
+export HOST="localhost"
+export PORT="localhost"
+export DATABASE_URI="localhost"
+export ALLOWED_ORIGINS="http://localhost:7777"
+export POSTGRES_USERNAME="postgres"
+export POSTGRES_PASSWORD="postgres"
+export POSTGRES_DATABASE="postgres"
+```
+
 ### Run the application
 
 ```bash
