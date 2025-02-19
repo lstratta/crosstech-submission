@@ -80,18 +80,6 @@ func (db *DB) CreateTrack(t *models.Track) (*models.Track, error) {
 	return t, nil
 }
 
-func (db *DB) CreateSignal(s *models.Signal) (*models.Signal, error) {
-	_, err := db.conn.Exec(`
-			INSERT INTO signals (elr, mileage, signal_id, signal_name)
-			VALUES (?0, ?1, ?2, ?3);`,
-		s.ELR, s.Mileage, s.SignalId, s.SignalName)
-	if err != nil {
-		return nil, fmt.Errorf("error inserting signal into database: %v", err)
-	}
-
-	return s, nil
-}
-
 func (db *DB) CreateTrackSignalJoin(sId, tId int) error {
 	_, err := db.conn.Exec(`
 			INSERT INTO track_signal_joins (signal_id, track_id)
@@ -102,4 +90,19 @@ func (db *DB) CreateTrackSignalJoin(sId, tId int) error {
 	}
 
 	return nil
+}
+
+func (db *DB) UpdateTrack(t *models.Track) (*models.Track, error) {
+	_, err := db.conn.Exec(
+		`
+			UPDATE tracks
+			SET source = ?0,
+				target = ?1
+			WHERE track_id = ?2;
+		`, t.Source, t.Target, t.TrackId)
+	if err != nil {
+		return nil, fmt.Errorf("error updating track: %v", err)
+	}
+
+	return t, nil
 }

@@ -12,4 +12,7 @@ func (s *Server) routes() {
 	r.POST("/tracks", s.handlePostTrack)
 	r.POST("/signals", s.handPostSignal)
 
+	r.PUT("/tracks", s.handleUpdateTrack)
+	r.PUT("/signals", s.handleUpdateSignal)
+
 }

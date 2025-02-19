@@ -30,3 +30,31 @@ func (db *DB) SignalsById(id string) ([]models.Signal, error) {
 
 	return s, nil
 }
+
+func (db *DB) CreateSignal(s *models.Signal) (*models.Signal, error) {
+	_, err := db.conn.Exec(`
+			INSERT INTO signals (elr, mileage, signal_id, signal_name)
+			VALUES (?0, ?1, ?2, ?3);`,
+		s.ELR, s.Mileage, s.SignalId, s.SignalName)
+	if err != nil {
+		return nil, fmt.Errorf("error inserting signal into database: %v", err)
+	}
+
+	return s, nil
+}
+
+func (db *DB) UpdateSignal(s *models.Signal) (*models.Signal, error) {
+	_, err := db.conn.Exec(
+		`
+			UPDATE signals
+			SET signal_name = ?0,
+				elr = ?1,
+				mileage = ?2
+			WHERE signal_id = ?3;
+		`, s.SignalName, s.ELR, s.Mileage, s.SignalId)
+	if err != nil {
+		return nil, fmt.Errorf("error updating signal: %v", err)
+	}
+
+	return s, nil
+}

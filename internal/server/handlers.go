@@ -129,6 +129,46 @@ func (s *Server) handPostSignal(c echo.Context) error {
 	return signalResponse(c, http.StatusCreated, err, "successfully created", []models.Signal{*res})
 }
 
+// PUT methods
+
+func (s *Server) handleUpdateSignal(c echo.Context) error {
+
+	b, err := io.ReadAll(c.Request().Body)
+	if err != nil {
+		return signalResponse(c, http.StatusInternalServerError, err, "error reading request body", nil)
+	}
+	sig := models.Signal{}
+	if err = json.Unmarshal(b, &sig); err != nil {
+		return signalResponse(c, http.StatusInternalServerError, err, "error unmarshalling json", nil)
+	}
+
+	res, err := s.db.UpdateSignal(&sig)
+	if err != nil {
+		return signalResponse(c, http.StatusInternalServerError, err, "error creating signal record", nil)
+	}
+
+	return signalResponse(c, http.StatusOK, nil, "update successful", []models.Signal{*res})
+}
+
+func (s *Server) handleUpdateTrack(c echo.Context) error {
+
+	b, err := io.ReadAll(c.Request().Body)
+	if err != nil {
+		return trackResponse(c, http.StatusInternalServerError, err, "error reading request body", nil)
+	}
+	t := models.Track{}
+	if err = json.Unmarshal(b, &t); err != nil {
+		return trackResponse(c, http.StatusInternalServerError, err, "error unmarshalling json", nil)
+	}
+
+	res, err := s.db.UpdateTrack(&t)
+	if err != nil {
+		return trackResponse(c, http.StatusInternalServerError, err, "error creating signal record", nil)
+	}
+
+	return trackResponse(c, http.StatusOK, nil, "update successful", []models.Track{*res})
+}
+
 func signalResponse(c echo.Context, status int, err error, message string, res []models.Signal) error {
 
 	if err != nil {
