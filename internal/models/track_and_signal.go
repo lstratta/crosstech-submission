@@ -23,13 +23,13 @@ type TrackSignalJoin struct {
 }
 
 type TrackResponse struct {
-	Tracks  []Track `json:"tracks"`
+	Tracks  []Track `json:"tracks,omitempty"`
 	Message string  `json:"message,omitempty"`
 	Error   string  `json:"errors,omitempty"`
 }
 
 type SignalResponse struct {
-	Signals []Signal `json:"signals"`
+	Signals []Signal `json:"signals,omitempty"`
 	Message string   `json:"message,omitempty"`
 	Error   string   `json:"errors,omitempty"`
 }

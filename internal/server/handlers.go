@@ -82,9 +82,7 @@ func (s *Server) handleGetSignals(c echo.Context) error {
 		return signalResponse(c, http.StatusInternalServerError, err, "error finding signals", nil)
 	}
 
-	return c.JSON(http.StatusOK, &models.SignalResponse{
-		Signals: sig,
-	})
+	return signalResponse(c, http.StatusOK, err, "request successful", sig)
 }
 
 // Returns all signals with a specific ID

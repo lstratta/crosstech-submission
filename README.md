@@ -1,5 +1,31 @@
 # Luke Stratta - Crosstech Backend Developer Challenge
 
+## Contents
+1. [My process](#my-process)
+1. [What this application does](#what-this-application-does)
+1. [Project structure and extras](#project-structure-and-extras)
+1. [Getting started](#getting-started)
+1. [Accessing the applicatioin](#using-the-application)
+
+### API Documentation
+
+#### Track API endpoints
+
+1. [GET /tracks](#get-tracks)
+1. [GET /tracks/:id](#get-tracksid)
+1. [GET /tracks?signal-id=id](#get-trackssignal-idid)
+1. [DELETE /tracks/:id](#delete-tracksid)
+1. [POST /tracks/:id](#post-tracks)
+
+
+#### Signal API Endpoints
+
+1. [GET /signals](#get-signals)
+1. [POST /signals](#post-signals)
+1. [PUT /signals](#put-signals)
+1. [GET /signals/:id](#get-signalsid)
+1. [DELETE /signals/:id](#delete-signalsid)
+
 ## My Process
 
 I started off by reading over the task. I broke it down into sections and created mini-tasks from this. This allowed me to see the project with the steps I needed to take.
@@ -45,6 +71,10 @@ A Makefile is present to add some convenience aliases. See the Makefile for all 
 Air is used as a hot-reload support tool for development. It helps when quickly making changes in the code and automatically watches for changes, builds a binary, and then runs it.
 
 A Dockerfile to build a container image is available.
+
+## Considerations and compromises
+
+
 
 ## Getting Started 
 
@@ -114,7 +144,7 @@ Tests are associated by file.
 make test
 ```
 
-## Accessing the application data
+## Using the application
 
 Once the application is running, to access the backend API, I recommend using something like [Insomnia](https://insomnia.rest/) or [Postman](https://www.postman.com/). 
 
@@ -122,9 +152,9 @@ You can then make API requests to the server.
 
 Here is a list of endpoints available, what requests you can make, and examples of their responses.
 
-```bash
-GET tracks 
+### GET /tracks 
 
+```bash
 http://localhost:7777/tracks
 
 RESPONSE: 
@@ -151,10 +181,13 @@ RESPONSE:
     ]
 }
 
----
+```
 
-GET /tracks/:id 
+[Back to contents](#contents)
 
+### GET /tracks/:id 
+
+```bash
 http://localhost:7777/tracks/3349
 
 RESPONSE: 
@@ -181,11 +214,16 @@ RESPONSE:
     ]
 }
 
----
+```
 
-DELETE /tracks/:id
- 
+[Back to contents](#contents)
+
+
+### DELETE /tracks/:id
+
+```bash
 http://localhost:7777/tracks/3349
+
 
 RESPONSE: 
 
@@ -196,10 +234,17 @@ RESPONSE:
 	"message": "delete successful"
 }
 
----
+```
 
-POST /tracks
+[Back to contents](#contents)
 
+### POST /tracks
+
+```bash
+# example request
+http://localhost:7777/tracks
+
+# example request body
 body
 {
 	"track_id": 92774,
@@ -250,8 +295,227 @@ RESPONSE:
 	"message": "successfully created"
 }
 
----
+```
 
-PUT /tracks/
+[Back to contents](#contents)
+
+### PUT /tracks/
+
+```bash
+# example request
+http://localhost:7777/tracks
+
+# example request body
+{
+	"track_id": 92774,
+	"source": "Test Station NEW",
+	"target": "Test Station 4"
+}
+
+RESPONSE
+
+200 OK
+
+{
+	"tracks": [
+		{
+			"track_pk": 0,
+			"track_id": 92774,
+			"source": "Test Station NEW",
+			"target": "Test Station 4"
+		}
+	],
+	"message": "update successful"
+}
+```
+[Back to contents](#contents)
+
+### GET /tracks?signal-id=id
+
+```bash
+# example
+http://localhost:7777/tracks?signal-id=453
+
+RESPONSE
+
+200 OK
+
+{
+	"tracks": [
+		{
+			"track_id": 55,
+			"source": "Acton Central",
+			"target": "Willesden Junction"
+		},
+		{
+			"track_id": 4084,
+			"source": "Wembley Central",
+			"target": "Acton Central"
+		},
+		{
+			"track_id": 4522,
+			"source": "Brent Cross West",
+			"target": "Acton Central"
+		}
+	],
+	"message": "request successful"
+}
+
+```
+[Back to contents](#contents)
+
+### GET /signals
+
+```bash
+# example
+http://localhost:7777/signals
+
+RESPONSE
+
+200 OK
+
+{
+	"signals": [
+		{
+			"signal_pk": 2,
+			"signal_id": 2848,
+			"signal_name": "SIG:SN169(CO) IECC PDRF14 LOC R3/107",
+			"elr": "ONM1",
+			"mileage": 4.2126
+		},
+		{
+			"signal_pk": 3,
+			"signal_id": 2849,
+			"signal_name": "SIG:SN173(CO) IECC PDMN02 LOC M3/144",
+			"elr": "MNO1",
+			"mileage": 5.6889
+		}
+	]
+}
+```
+
+[Back to contents](#contents)
+
+### POST /signals
+
+```bash
+# example 
+http://localhost:7777/signals
+
+# example request
+{
+	"signal_id": 1234,
+	"signal_name": "Test signal",
+	"elr": "TEN4",
+	"mileage": 8.33333
+}
+
+RESPONSE
+
+201 Created
+
+{
+	"signals": [
+		{
+			"signal_id": 1234,
+			"signal_name": "Test signal",
+			"elr": "TEN4",
+			"mileage": 8.33333
+		}
+	],
+	"message": "successfully created"
+}
+```
+
+[Back to contents](#contents)
+
+### PUT /signals
+
+```bash 
+# example 
+http://localhost:7777/signals
+
+# example request
+{
+	"signal_id": 453,
+	"signal_name": "SIG:AW148(CO) ACTON WELLS JCN -- UPDATED --",
+	"elr": "LPC5",
+	"mileage": 3.1745
+}
+
+RESPONSE
+
+200 OK
+
+{
+	"signals": [
+		{
+			"signal_id": 453,
+			"signal_name": "SIG:AW148(CO) ACTON WELLS JCN -- UPDATED --",
+			"elr": "LPC5",
+			"mileage": 3.1745
+		}
+	],
+	"message": "update successful"
+}
+```
+
+[Back to contents](#contents)
+
+### GET /signals/:id
+
+```bash
+# example 
+http://localhost:7777/signals/19745
+
+RESPONSE
+
+200 OK 
+
+{
+	"signals": [
+		{
+			"signal_id": 19745,
+			"signal_name": "",
+			"elr": "NMO1",
+			"mileage": 0
+		},
+		{
+			"signal_id": 19745,
+			"signal_name": "",
+			"elr": "MNO1",
+			"mileage": 0
+		},
+		{
+			"signal_id": 19745,
+			"signal_name": "",
+			"elr": "OMN1",
+			"mileage": 0
+		},
+		{
+			"signal_id": 19745,
+			"signal_name": "",
+			"elr": "NOM1",
+			"mileage": 0
+		}
+	],
+	"message": "request successful"
+}
+```
+[Back to contents](#contents)
+
+### DELETE /signals/:id
+
+```bash
+# example 
+http://localhost:7777/signals/453
+
+RESPONSE
+
+200 OK
+
+{
+	"message": "delete successful"
+}
 
 ```
