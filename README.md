@@ -175,6 +175,20 @@ Tests are associated by file.
 make test
 ```
 
+### Run the application as a Docker container
+
+```bash
+make docker-build # also runs the tests again
+
+make docker-run
+```
+
+The application will then be live at:
+
+```bash
+http://localhost:7777
+```
+
 ## Using the application
 
 Once the application is running, to access the backend API, I recommend using something like [Insomnia](https://insomnia.rest/) or [Postman](https://www.postman.com/). 
