@@ -291,7 +291,6 @@ RESPONSE:
 200 OK
 
 {
-	"tracks": null,
 	"message": "delete successful"
 }
 
